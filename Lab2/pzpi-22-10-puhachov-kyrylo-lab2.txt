@@ -1,1 +1,404 @@
-test
+Міністерство освіти та науки України
+Харківський національний університет радіоелектроніки
+
+
+Кафедра програмної інженерії
+
+
+ЗВІТ
+до лабораторної роботи №2 з дисципліни
+«Аналіз та рефакторинг коду»
+На тему: «Мобільний застосунок»
+
+
+Виконав:
+ст. гр. ПЗПІ-22-10
+Пугачов Кирило Вадимович
+
+Перевірив:
+ас. кафедри ПІ
+Дашенков Дмитро Сергійович
+
+Харків 2025
+
+1. Аналіз завдання
+Метою даної лабораторної роботи є розробка програмної архітектури та створення і відлагодження програмного коду мобільного застосунку як частини інформаційної системи управління мостами. Додаток повинен взаємодіяти з основною системою, надавати користувачеві можливості перегляду стану мостів, отримання повідомлень про аварійні ситуації, перегляду аналітики та виконувати адміністрування.
+Завдання включає аналіз існуючих компонентів системи, розробку UML-діаграм, опис бізнес-логіки, визначення механізмів захисту даних, реалізацію інтернаціоналізації та локалізації, а також розробку функціональності налаштувань та адміністрування.
+ 
+2. Хід роботи
+2.1 Підготовка до роботи
+Перед початком реалізації мобільного застосунку було виконано наступні підготовчі кроки:
+	Створено структуру репозиторію на GitHub з відповідними гілками для Android та серверної частини
+	Налаштовано середовище розробки Android Studio з необхідними SDK та бібліотеками
+	Створено ASP.NET Core Web API проект для серверної частини з Entity Framework Core
+	Налаштовано базу даних SQLite для зберігання інформації про мости
+	Налаштовано CORS політики та Swagger для тестування API
+2.2 Аналіз вимог
+Було проведено детальний аналіз функціональних та нефункціональних вимог:
+Функціональні вимоги:
+	Відображення списку мостів з основною інформацією
+	Перегляд детальної інформації про обраний міст
+	CRUD операції для управління даними мостів
+	Синхронізація даних з сервером через REST API
+	Обробка помилок мережі та відображення статусів завантаження
+Нефункціональні вимоги:
+	Підтримка платформи Android (API 21+)
+	Використання архітектури MVVM з Repository pattern
+	Забезпечення стабільного мережевого з'єднання з retry механізмами
+	Адаптивний Material Design інтерфейс
+	Логування запитів та відповідей для діагностики
+2.3 Проектування архітектури
+Архітектура мобільного застосунку спроектована за принципами Clean Architecture:
+	Presentation Layer: Activities, Fragments, ViewModels
+	Domain Layer: Use Cases, Repository interfaces, Models
+	Data Layer: Repository implementations, Network clients, Local storage
+	Infrastructure: Dependency Injection, Network configuration
+Серверна частина реалізована за багаторівневою архітектурою:
+	Controller Layer: API контролери з атрибутами маршрутизації
+	Service Layer: Бізнес-логіка та валідація
+	Data Access Layer: Entity Framework DbContext
+	Models: Сутності бази даних та DTO об'єкти
+3. Опис програмного коду мобільного застосунку
+3.1 Архітектура програмного забезпечення
+Мобільний застосунок реалізовано за архітектурою MVVM з використанням:
+	Model: Kotlin data classes з kotlinx.serialization для JSON
+	View: Android Activities/Fragments з View Binding
+	ViewModel: AndroidX ViewModel з LiveData для reactive UI
+	Repository Pattern: Абстракція рівня доступу до даних
+3.2 Використані технології та компоненти
+Android застосунок:
+	Kotlin як основна мова програмування
+	Retrofit 2 для HTTP клієнта з OkHttp interceptors
+	Kotlinx Serialization для JSON обробки
+	AndroidX ViewModel та LiveData для управління станом
+	RecyclerView з DiffUtil для ефективного відображення списків
+	Material Design Components для сучасного UI
+Серверна частина:
+	ASP.NET Core 5.0 Web API
+	Entity Framework Core з SQLite провайдером
+	Newtonsoft.Json для серіалізації
+	Swagger/OpenAPI для документації API
+	CORS middleware для кросдоменних запитів
+3.3 Реалізована бізнес-логіка
+Застосунок забезпечує наступну функціональність:
+	Перегляд списку мостів: Завантаження та відображення всіх мостів з сервера
+	Детальна інформація: Перегляд повної інформації про обраний міст
+	Створення нового моста: Форма додавання з валідацією полів
+	Редагування існуючого моста: Можливість оновлення інформації
+	Видалення моста: Підтвердження видалення з діалогом
+	Обробка помилок: Користувацькі повідомлення про мережеві помилки
+	Логування: Детальні логи HTTP запитів для діагностики.
+3.4 Мережева взаємодія
+Реалізовано надійний HTTP клієнт з наступними можливостями:
+	Автоматичні retry при тимчасових збоях
+	Timeout налаштування (connect: 30s, read: 30s, write: 30s)
+	Детальне логування запитів та відповідей
+	Обробка різних HTTP статус кодів
+	JSON Content-Type headers для правильної серіалізації.
+4. Захист даних
+Для забезпечення безпеки реалізовано:
+	HTTP з'єднання (в production рекомендується HTTPS)
+	Валідація вхідних даних на сервері
+	Обробка SQL ін'єкцій через Entity Framework параметризовані запити
+	CORS політики для контролю доступу з клієнтських застосунків
+	Логування запитів для аудиту безпеки.
+5. Взаємодія з компонентами системи
+Мобільний застосунок взаємодіє з:
+	REST API сервер: HTTP запити для CRUD операцій
+	База даних: SQLite через Entity Framework Core
+	Swagger UI: Інтерактивна документація API
+	Логування система: Детальні логи для моніторингу.
+6. Тестування та налагодження
+Реалізовано засоби для діагностики:
+	HTTP логування на рівні OkHttp interceptor
+	Server-side логування через ILogger interface
+	Swagger UI для ручного тестування API endpoints
+	Обробка винятків з детальними повідомленнями.
+
+7. Скріншоти інтерфейсу
+7.1 Список мостів
+ 
+Рисунок 1 - Головний екран зі списком мостів, що відображає назву, тип та основні характеристики
+
+На головному екрані мобільного застосунку реалізовано інтуїтивно зрозумілий інтерфейс для перегляду списку мостів. Кожен елемент списку містить основну інформацію, зокрема назву, тип та ключові характеристики мосту. Завдяки використанню компонента RecyclerView з DiffUtil, забезпечено ефективне оновлення списку без перевантаження інтерфейсу. Сучасний дизайн, побудований на принципах Material Design, забезпечує зручність взаємодії користувача із застосунком. Отримання даних відбувається через REST API з обробкою мережевих помилок, що підвищує надійність роботи програми.
+7.2 Деталі моста
+ 
+Рисунок 2 - Екран детальної інформації про міст з повними технічними параметрами
+Екран детальної інформації про міст надає користувачеві повний доступ до технічних характеристик обраного об’єкта. Інтерфейс реалізовано у відповідності до принципів зручності та доступності — усі дані структуровано за категоріями, що полегшує сприйняття інформації. Завдяки використанню архітектури MVVM та LiveData, дані оновлюються динамічно й надійно синхронізуються з сервером. Реалізовано перевірку на наявність з’єднання з мережею, а також обробку можливих помилок при завантаженні. Такий підхід забезпечує стабільну роботу екрану навіть в умовах нестабільного інтернет-з’єднання, підвищуючи зручність і довіру користувача до застосунку.
+8. UML-діаграми
+8.1 UML-діаграма прецедентів (Use Case Diagram)
+
+ 
+Рисунок 3 - UML-діаграма прецедентів
+	Діаграма прецедентів відображає основні сценарії взаємодії користувачів із системою. Вона показує, які дії можуть виконувати звичайні користувачі та адміністратори, зокрема перегляд інформації про мости, а також додавання, редагування та видалення даних. Це дозволяє чітко визначити функціональні вимоги до застосунку.
+
+8.2 UML-діаграма компонент (Component Diagram)
+
+ 
+Рисунок 4 - UML-діаграма компонент
+Діаграма компонент демонструє логічну структуру застосунку та розподіл відповідальностей між його частинами. Вона ілюструє, як клієнтська частина (UI, ViewModel, Repository) взаємодіє з серверною (API контролери, сервіси, база даних), що допомагає краще зрозуміти архітектуру системи й спростити її супровід.
+8.3 ER-модель даних
+ 
+Рисунок 5 - ER-модель даних мобільної частини системи
+	ER-модель даних відображає структуру бази даних і взаємозв’язки між сутностями, такими як мости, датчики, типи датчиків, інспектори та дані з сенсорів. Вона забезпечує логічну основу для зберігання інформації в системі та дозволяє ефективно реалізувати функціональність, пов’язану з моніторингом стану мостів.
+8.4 UML-діаграма діяльності (Activity Diagram)
+ 
+Рисунок 6 - UML-діаграма діяльності
+	Діаграма діяльності описує послідовність дій користувача в межах мобільного застосунку, починаючи з запуску і завершуючи переглядом деталей моста. Вона демонструє ключові логічні гілки, наприклад перевірку наявності інтернет-з’єднання, і дозволяє краще зрозуміти логіку роботи інтерфейсу користувача та поведінку системи.
+9. Висновки
+У даній лабораторній роботі було розроблено архітектуру та реалізовано базовий функціонал мобільного застосунку для інформаційної системи управління мостами. Застосунок надає можливість авторизації, перегляду даних про мости, отримання push-повідомлень.
+ 
+ДОДАТОК А
+Фрагменти програмного коду
+
+	А.1 Код екрану подробиць про міст
+
+package com.example.bridgeapp.ui.screens
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.bridgeapp.model.Bridge
+import com.example.bridgeapp.viewmodel.BridgeViewModel
+import java.text.SimpleDateFormat
+import java.util.*
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BridgeDetailScreen(
+    bridgeId: Int,
+    viewModel: BridgeViewModel,
+    onBackClick: () -> Unit
+) {
+    LaunchedEffect(bridgeId) {
+        viewModel.loadBridge(bridgeId)
+    }
+
+    Scaffold(
+        topBar = {
+            LargeTopAppBar(
+                title = {
+                    Text(
+                        viewModel.selectedBridge?.name ?: "Деталі мосту",
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
+                    }
+                },
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                )
+            )
+        }
+    ) { padding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            when {
+                viewModel.isLoading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+
+                viewModel.error != null -> {
+                    Column(
+                        modifier = Modifier.align(Alignment.Center),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = viewModel.error ?: "",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Button(onClick = {
+                            viewModel.clearError()
+                            viewModel.loadBridge(bridgeId)
+                        }) {
+                            Text("Повторити")
+                        }
+                    }
+                }
+
+                viewModel.selectedBridge != null -> {
+                    AnimatedVisibility(
+                        visible = true,
+                        enter = fadeIn(tween(400)),
+                        exit = fadeOut(tween(400))
+                    ) {
+                        BridgeDetailContent(viewModel.selectedBridge!!)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BridgeDetailContent(bridge: Bridge) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        ElevatedCard(title = "Основна інформація", icon = Icons.Default.Info) {
+            InfoRow("Назва", bridge.name)
+            InfoRow("Опис", bridge.description)
+            InfoRow("Тип", bridge.bridgeType)
+            InfoRow("Місцезнаходження", bridge.location)
+            InfoRow("Статус", bridge.status)
+            InfoRow("Дата створення", formatDate(bridge.creationDate))
+        }
+
+        ElevatedCard(title = "Датчики", icon = Icons.Default.Sensors) {
+            bridge.sensors?.takeIf { it.isNotEmpty() }?.forEach { sensor ->
+                SensorItem(sensor)
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+            } ?: Text("Датчики не знайдені", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+
+        ElevatedCard(title = "Інспектори", icon = Icons.Default.PersonSearch) {
+            bridge.inspectors?.takeIf { it.isNotEmpty() }?.forEach { inspector ->
+                InspectorItem(inspector)
+                Divider(modifier = Modifier.padding(vertical = 8.dp))
+            } ?: Text("Інспектори не призначені", color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+@Composable
+private fun ElevatedCard(title: String, icon: ImageVector, content: @Composable ColumnScope.() -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(6.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(title, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            content()
+        }
+    }
+}
+
+@Composable
+private fun InfoRow(label: String, value: String) {
+    Column(modifier = Modifier.padding(vertical = 4.dp)) {
+        Text(label, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+        Text(value, style = MaterialTheme.typography.bodyMedium)
+    }
+}
+
+@Composable
+private fun SensorItem(sensor: com.example.bridgeapp.model.Sensor) {
+    Column {
+        Text(sensor.name, fontWeight = FontWeight.Medium)
+        Text("Тип: ${sensor.sensorType?.name ?: "—"}", fontSize = 13.sp)
+        Text("Опис: ${sensor.description ?: "—"}", fontSize = 13.sp)
+        Text("Локація: ${sensor.location ?: "—"}", fontSize = 13.sp)
+        Text("Встановлено: ${sensor.installationDate?.let { formatDate(it) } ?: "—"}", fontSize = 13.sp)
+        Text("Статус: ${sensor.status ?: "—"}", fontSize = 13.sp)
+        val latest = sensor.sensorDatas?.maxByOrNull { it.date }
+        latest?.let {
+            Text("Останнє значення: ${it.value} (${formatDate(it.date)})", fontSize = 13.sp, color = MaterialTheme.colorScheme.primary)
+        }
+    }
+}
+
+@Composable
+private fun InspectorItem(inspector: com.example.bridgeapp.model.Inspector) {
+    Column {
+        Text(inspector.name, fontWeight = FontWeight.Medium)
+        Text("Роль: ${inspector.role}", fontSize = 13.sp)
+        Text("Контакт: ${inspector.contact}", fontSize = 13.sp)
+    }
+}
+
+private fun formatDate(dateString: String): String {
+    return try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+        val outputFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
+        val date = inputFormat.parse(dateString)
+        outputFormat.format(date ?: Date())
+    } catch (e: Exception) {
+        dateString
+    }
+}
+
+	А.2 Код АPI-клієнту для отримання даних з серверу
+
+package com.example.bridgeapp.network
+
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import java.util.concurrent.TimeUnit
+
+object ApiClient {
+    private const val BASE_URL = "http://10.0.2.2:5001"
+
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
+
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
+
+    private val okHttpClient = OkHttpClient.Builder()
+        .addInterceptor(loggingInterceptor)
+        .addInterceptor { chain ->
+            val request = chain.request().newBuilder()
+                .addHeader("User-Agent", "BridgeApp/1.0")
+                .addHeader("Accept", "application/json")
+                .addHeader("Content-Type", "application/json")
+                .build()
+            chain.proceed(request)
+        }
+        .connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .build()
+
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .client(okHttpClient)
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
+        .build()
+
+    val bridgeApiService: BridgeApiService = retrofit.create(BridgeApiService::class.java)
+}
