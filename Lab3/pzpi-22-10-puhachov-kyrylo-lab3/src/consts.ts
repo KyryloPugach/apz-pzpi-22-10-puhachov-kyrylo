@@ -1,0 +1,9 @@
+export const REACT_APP_API_URL = "https://localhost:5001/";
+export const MAIN_ROUTE = '/';
+export const NO_ROUTE = '*';
+export const BRIDGES_ROUTE = '/bridges'
+export const INSPECTORS_ROUTE = "/inspectors"
+export const SENSORS_ROUTE = '/sensors'
+export const SENSOR_DATAS_ROUTE = '/sensor-datas'
+export const SENSOR_TYPES_ROUTE = '/sensor-types'
+export const CHART_ROUTE = '/chart'
