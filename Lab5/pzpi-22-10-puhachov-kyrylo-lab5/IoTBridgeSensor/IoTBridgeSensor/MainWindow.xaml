@@ -1,0 +1,17 @@
+﻿<Window x:Class="IoTBridgeSensor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:IoTBridgeSensor"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <Label FontSize="24" Content="Data sensor simulation" HorizontalAlignment="Center" Margin="0,10,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.819,-0.501"/>
+        <Label Content="SensorId" HorizontalAlignment="Left" Margin="203,106,0,0" VerticalAlignment="Top"/>
+        <Label Content="Value" HorizontalAlignment="Left" Margin="203,152,0,0" VerticalAlignment="Top"/>
+        <TextBox Name="idInput" HorizontalAlignment="Left" Margin="441,114,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120"/>
+        <TextBox Name="valueInput" HorizontalAlignment="Left" Margin="441,160,0,0" TextWrapping="Wrap" Text="Value" VerticalAlignment="Top" Width="120"/>
+        <Button Content="Emulate sensor send data" HorizontalAlignment="Left" Margin="203,232,0,0" VerticalAlignment="Top" Width="358" Height="35" Click="Button_Click"/>
+    </Grid>
+</Window>
